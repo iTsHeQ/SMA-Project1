@@ -17,7 +17,6 @@ def bestNode(G, list_node):
     print(list_node)
     best_node = list_node[0]
     length = 0
-    random.seed(4)  # Seed chosen by fair dice roll, guaranteed to be random.
     for node in list_node:
         numberOfActivation = icm(G, node)
         print("Length : " +  str(length) + " Number of activation: " + str(numberOfActivation))
@@ -35,6 +34,7 @@ def greedy(budget, list_of_nodes):
     Seed = []
     nodeList = list(list_of_nodes)
     length = 0
+    random.seed(4)  # Seed chosen by fair dice roll, guaranteed to be random.
     while i != k:
         #best_node = bestNode(G, nodeList)
         #nodeList.remove(best_node)

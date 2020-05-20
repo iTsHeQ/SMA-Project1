@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import random
 
 def icm(G, n):
-    random.seed(4)  # Chosen by fair dice roll, guaranteed to be random.
     activated = [n]
     for neighbor in G.neighbors(n):
         weight = G.get_edge_data(n, neighbor).get("weight")
@@ -18,6 +17,7 @@ def bestNode(G, list_node):
     print(list_node)
     best_node = list_node[0]
     length = 0
+    random.seed(4)  # Seed chosen by fair dice roll, guaranteed to be random.
     for node in list_node:
         numberOfActivation = icm(G, node)
         print("Length : " +  str(length) + " Number of activation: " + str(numberOfActivation))

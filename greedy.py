@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import random
 
 def icm(G, n):
+    random.seed(4)  # Chosen by fair dice roll, guaranteed to be random.
     activated = [n]
     for neighbor in G.neighbors(n):
         weight = G.get_edge_data(n, neighbor).get("weight")
@@ -40,7 +41,7 @@ def greedy(budget, list_of_nodes):
         best_node = nodeList[0]
         for node in nodeList:
             numberOfActivation = icm(G, node)
-            #print("Length : " +  str(length) + " Number of activation: " + str(numberOfActivation))
+            # print("Length : " +  str(length) + " Number of activation: " + str(numberOfActivation))
             if numberOfActivation > length:
                 prev_best = best_node
                 best_node = node
@@ -58,9 +59,11 @@ def greedy(budget, list_of_nodes):
 #TODO: still needs to be tested with the real edgelist (sum)
 G= nx.read_weighted_edgelist("testing/sl06.edgelist", create_using=nx.DiGraph())
 
+G = nx.read_weighted_edgelist('normalized.edgelist', create_using=nx.DiGraph())
+
 list_nodes = list(G.nodes())
 
 print(list_nodes[0])
-bestSeed = greedy(2, list_nodes)
+bestSeed = greedy(500, list_nodes)
 
 print(set(bestSeed))

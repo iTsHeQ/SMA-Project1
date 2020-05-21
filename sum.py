@@ -8,13 +8,15 @@ def reverseGraph(G):
 def sumGraphs(graph1, graph2):
     tuplesToAdd = []
     for tuple in graph1.edges():
-        if tuple not in graph2.edges():
+        if tuple[1] == tuple[2]:
+            pass
+        elif tuple not in graph2.edges():
             newTuple =graph1.get_edge_data(tuple[0],tuple[1])
             w1 = graph1.get_edge_data(tuple[0],tuple[1])
             tuplesToAdd.append(tuple)
             #tuplesToAdd.append((tuple, w1))
             #graph2.add_edge(tuple[0], tuple[1], weight=w1["weight"])
-        if tuple in graph2.edges():
+        else:
             w1 = graph1.get_edge_data(tuple[0],tuple[1])
             w2 = graph2.get_edge_data(tuple[0],tuple[1])
             w2["weight"] += w1["weight"]

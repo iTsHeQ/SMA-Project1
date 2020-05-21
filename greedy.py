@@ -2,6 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import random
 from tqdm import tqdm
+import os
 
 def neighbors_activation(G):
     neighbors_of = {}
@@ -48,7 +49,7 @@ def icm(G, nodes, act):
             actives = activated
     return len(set(passives))
 
-def greedy(budget, G,pregen=True):
+def greedy(budget, G, pregen=True):
     i = 0
     Seed = []
     random.seed(4)  # Seed chosen by fair dice roll, guaranteed to be random. https://xkcd.com/212 
@@ -72,9 +73,13 @@ def greedy(budget, G,pregen=True):
     return Seed
 
 #DONE: still needs to be tested with the real edgelist (sum)
-G= nx.read_weighted_edgelist("testing/sl06.edgelist", create_using=nx.DiGraph())
+# G= nx.read_weighted_edgelist("testing/sl06.edgelist", create_using=nx.DiGraph())
 
-G = nx.read_weighted_edgelist('normalized.edgelist', create_using=nx.DiGraph())
+
+dataset_loc = 'Dataset'
+sum_edge = os.path.join(dataset_loc, 'Preproc', 'sum.edgelist')
+norm_edge = os.path.join(dataset_loc, 'Preproc', 'normalized.edgelist')
+G = nx.read_weighted_edgelist(norm_edge, create_using=nx.DiGraph())
 
 list_nodes = list(G.nodes())
 

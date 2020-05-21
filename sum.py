@@ -1,5 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import os 
 
 def reverseGraph(G):
     revGraph= nx.DiGraph.reverse(G)
@@ -31,24 +32,25 @@ def sumGraphs(graph1, graph2):
     
     return graph2
 
+dataset_loc = 'Dataset'
+retweets = os.path.join(dataset_loc, 'higgs-retweet_network.edgelist')
+mentions = os.path.join(dataset_loc, 'higgs-mention_network.edgelist')
+replies = os.path.join(dataset_loc, 'higgs-reply_network.edgelist')
 
-RetweetGraph = nx.read_weighted_edgelist("higgs-retweet_network.edgelist", nodetype=int, create_using=nx.DiGraph())
-ReplyGraph = nx.read_weighted_edgelist("higgs-reply_network.edgelist", nodetype=int, create_using=nx.DiGraph())
-MentionGraph = nx.read_weighted_edgelist("higgs-mention_network.edgelist", nodetype=int, create_using=nx.DiGraph())
+RetweetGraph = nx.read_weighted_edgelist(retweets, nodetype=int, create_using=nx.DiGraph())
+ReplyGraph = nx.read_weighted_edgelist(replies, nodetype=int, create_using=nx.DiGraph())
+MentionGraph = nx.read_weighted_edgelist(mentions, nodetype=int, create_using=nx.DiGraph())
 
 Rev_RetweetGraph = reverseGraph(RetweetGraph)
 Rev_ReplyGraph = reverseGraph(ReplyGraph)
 Rev_MentionGraph = reverseGraph(MentionGraph)
 
-
-
 result = sumGraphs(Rev_RetweetGraph, Rev_ReplyGraph)
-
 
 result2 = sumGraphs(result, Rev_MentionGraph)
 
-
-nx.write_edgelist(result2, "sum.edgelist", data=["weight"])
+sum_edge = os.path.join(dataset_loc,'Preproc','sum.edgelist')
+nx.write_edgelist(result2, sum_edge, data=["weight"])
 maxCon = max(dict(result2.edges()).items(), key=lambda x: x[1]['weight'])
 print(maxCon)
 

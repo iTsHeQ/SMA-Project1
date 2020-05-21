@@ -8,7 +8,7 @@ def reverseGraph(G):
 def sumGraphs(graph1, graph2):
     tuplesToAdd = []
     for tuple in graph1.edges():
-        if tuple[1] == tuple[2]:
+        if tuple[0] == tuple[1]:
             pass
         elif tuple not in graph2.edges():
             newTuple =graph1.get_edge_data(tuple[0],tuple[1])

@@ -80,7 +80,7 @@ def main():
     dataset_loc = 'Dataset'
     sum_edge = os.path.join(dataset_loc, 'Preproc', 'sum.edgelist')
     norm_edge = os.path.join(dataset_loc, 'Preproc', 'normalized.edgelist')
-    G = nx.read_weighted_edgelist(norm_edge, create_using=nx.DiGraph())
+    G = nx.read_weighted_edgelist(norm_edge, nodetype=int, create_using=nx.DiGraph())
     bestSeed = greedy(5, G)
 
     print(set(bestSeed))

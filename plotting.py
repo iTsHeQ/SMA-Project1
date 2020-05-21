@@ -1,6 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import random
+import os
 
 def neighbors_activation(G):
     neighbors_of = {}
@@ -51,11 +52,16 @@ def greedyPlotting(Graph):
         lengthICM = len(result)
         greedyPlot.append(lengthICM)
 
-Graph = nx.read_weighted_edgelist('normalized.edgelist',nodetype=int, create_using=nx.DiGraph())
+
+dataset_loc = 'Dataset'
+sum_edge = os.path.join(dataset_loc, 'Preproc', 'sum.edgelist')
+norm_edge = os.path.join(dataset_loc, 'Preproc', 'normalized.edgelist')
+Graph = nx.read_weighted_edgelist(norm_edge, nodetype=int, create_using=nx.DiGraph())
 
 # this one should be the output of the greedy algorithm
 test = {'186185', '179789', '222163', '68962', '193569', '50901', '358743', '34477', '140349', '315894', '116701', '13795', '182039', '29420', '6940', '293898', '141249', '161509', '264174', '182708', '81944', '422221', '316609', '118587', '79902', '5011', '42894', '39564', '42845', '227066'}
 fSuV = []
+
 for e in test:
     fSuV.append(int(e))
 

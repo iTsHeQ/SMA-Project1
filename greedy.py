@@ -15,16 +15,43 @@ def neighbors_activation(G):
         neighbors_of[n]= activated
     return neighbors_of
 
+def icm_all(G, act):
+    icm = {}
+    for node in tqdm(G.nodes()):
+        actives, passives = [node],[]
+        # for x in icm:
+        #     (actives, passives) = ([], icm[x][icm[x].index(
+        #         node):]) if node in icm[x] else ([node],[])
+        while bool(actives):
+            for n in actives:
+                activated = []
+                # print((set(G.neighbors(n)) - set(passives)))
+                for neighbor in (set(G.neighbors(n)) - set(passives)):
+                    if neighbor in act[n]:
+                        activated.append(neighbor)
+                passives +=actives
+                actives = activated
+                # print(actives,passives)
+        icm[node] = passives
+    return(icm)
+
+def pregen_icm(G, nodes, act, _icm):
+    no_act = {node: len(_icm[node]) for node in nodes}
+    max_act = max(no_act.values())
+    return(max_act)
+            
+        
+
 def icm(G, nodes, act):
     actives = nodes # a node in nodes can't be reactivated
     passives = set()
     while bool(actives):
-        for n in nodes:
+        for n in actives:
             activated = set()
             for neighbor in set(G.neighbors(n)) - passives:
                 if neighbor in act[n]:
                     activated.add(neighbor)
-            passives += actives
+            passives.update(set(actives))
             actives = activated
     return len(set(passives))
 
@@ -44,7 +71,7 @@ def icm(G, nodes, act):
 #     print("THIS is the best node: " + str(list(bestNode)))
 #     return best_node
 
-def greedy(budget, G):
+def greedy(budget, G,pregen=True):
     i = 0
     k = budget
     Seed = []
@@ -53,7 +80,7 @@ def greedy(budget, G):
     
     nodeList = list(G.nodes())
     act = neighbors_activation(G)
-    
+    _icm = icm_all(G, act)
     while i != k:
         #best_node = bestNode(G, nodeList)
         #nodeList.remove(best_node)
@@ -61,7 +88,10 @@ def greedy(budget, G):
         numberOfActivations = {}
         for node in tqdm(nodeList, 'searching for the %d most activating user'% (i+1)):
             fSuV = Seed + [node]
-            numberOfActivation = icm(G, fSuV,act)
+            if pregen:
+                numberOfActivation = pregen_icm(G, fSuV, act, _icm)
+            else:
+                numberOfActivation = icm(G, fSuV, act)
             # print("Length : " +  str(length) + " Number of activation: " + str(numberOfActivation))
             # if numberOfActivation > length:
             #     prev_best = best_node

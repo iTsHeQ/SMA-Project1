@@ -2,6 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import random
 from tqdm import tqdm
+import os
 
 def neighbors_activation(G):
     neighbors_of = {}
@@ -48,7 +49,7 @@ def icm(G, nodes, act):
             actives = activated
     return len(set(passives))
 
-def greedy(budget, G,pregen=True):
+def greedy(budget, G, pregen=True):
     i = 0
     Seed = []
     random.seed(4)  # Seed chosen by fair dice roll, guaranteed to be random. https://xkcd.com/212 
@@ -58,7 +59,7 @@ def greedy(budget, G,pregen=True):
     while i != budget:
         best_node = nodeList[0]
         numberOfActivations = {}
-        for node in tqdm(nodeList, 'searching for the %d most activating user'% (i+1)):
+        for node in tqdm(nodeList, 'searching for the %d/%d most activating user'% (i+1,budget)):
             fSuV = Seed + [node]
             if pregen:
                 numberOfActivation = pregen_icm(G, fSuV, act, _icm)
@@ -72,13 +73,19 @@ def greedy(budget, G,pregen=True):
     return Seed
 
 #DONE: still needs to be tested with the real edgelist (sum)
-G= nx.read_weighted_edgelist("testing/sl06.edgelist", create_using=nx.DiGraph())
-
-G = nx.read_weighted_edgelist('normalized.edgelist', nodetype=int, create_using=nx.DiGraph())
-
-list_nodes = list(G.nodes())
+# G= nx.read_weighted_edgelist("testing/sl06.edgelist", create_using=nx.DiGraph())
 
 
-bestSeed = greedy(10, G)
+def main():
+    dataset_loc = 'Dataset'
+    sum_edge = os.path.join(dataset_loc, 'Preproc', 'sum.edgelist')
+    norm_edge = os.path.join(dataset_loc, 'Preproc', 'normalized.edgelist')
+    G = nx.read_weighted_edgelist(norm_edge, create_using=nx.DiGraph())
+    bestSeed = greedy(5, G)
 
-print(set(bestSeed))
+    print(set(bestSeed))
+
+if __name__ == '__main__':
+    main()
+
+

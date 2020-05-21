@@ -17,21 +17,16 @@ def neighbors_activation(G):
 
 def icm_all(G, act):
     icm = {}
-    for node in tqdm(G.nodes()):
+    for node in tqdm(G.nodes(),'modeling of the cascades for each nodes'):
         actives, passives = [node],[]
-        # for x in icm:
-        #     (actives, passives) = ([], icm[x][icm[x].index(
-        #         node):]) if node in icm[x] else ([node],[])
         while bool(actives):
             for n in actives:
                 activated = []
-                # print((set(G.neighbors(n)) - set(passives)))
                 for neighbor in (set(G.neighbors(n)) - set(passives)):
                     if neighbor in act[n]:
                         activated.append(neighbor)
                 passives +=actives
                 actives = activated
-                # print(actives,passives)
         icm[node] = passives
     return(icm)
 
@@ -40,8 +35,6 @@ def pregen_icm(G, nodes, act, _icm):
     max_act = max(no_act.values())
     return(max_act)
             
-        
-
 def icm(G, nodes, act):
     actives = nodes # a node in nodes can't be reactivated
     passives = set()
@@ -55,68 +48,37 @@ def icm(G, nodes, act):
             actives = activated
     return len(set(passives))
 
-#this will not work, we have to keep it in the main function (greed())
-# def bestNode(G, list_node):
-#     print(list_node)
-#     best_node = list_node[0]
-#     length = 0
-#     for node in list_node:
-#         numberOfActivation = icm(G, node)
-#         print("Length : " +  str(length) + " Number of activation: " + str(numberOfActivation))
-#         if numberOfActivation > length:
-#             prev_best = best_node
-#             best_node = node
-#             length = numberOfActivation
-#             #length muss übergeben werden
-#     print("THIS is the best node: " + str(list(bestNode)))
-#     return best_node
-
 def greedy(budget, G,pregen=True):
     i = 0
-    k = budget
     Seed = []
-    length = 0
-    random.seed(4)  # Seed chosen by fair dice roll, guaranteed to be random. https://xkcd.com/212
-    
+    random.seed(4)  # Seed chosen by fair dice roll, guaranteed to be random. https://xkcd.com/212 
     nodeList = list(G.nodes())
     act = neighbors_activation(G)
     _icm = icm_all(G, act)
-    while i != k:
-        #best_node = bestNode(G, nodeList)
-        #nodeList.remove(best_node)
+    while i != budget:
         best_node = nodeList[0]
         numberOfActivations = {}
         for node in tqdm(nodeList, 'searching for the %d most activating user'% (i+1)):
             fSuV = Seed + [node]
             if pregen:
                 numberOfActivation = pregen_icm(G, fSuV, act, _icm)
-            else:
+            else: #left over for comparison
                 numberOfActivation = icm(G, fSuV, act)
-            # print("Length : " +  str(length) + " Number of activation: " + str(numberOfActivation))
-            # if numberOfActivation > length:
-            #     prev_best = best_node
-            #     best_node = node
-            #     length = numberOfActivation
             numberOfActivations[node] = numberOfActivation
-            #print("Checking: " + str(node) +  " best node is: " + str(best_node))
-        #print(nodeList)
         bestNode = max(numberOfActivations, key=numberOfActivations.get)
         nodeList.remove(best_node)
-        #print("After: " + str(nodeList))
         Seed.append(best_node)
-        #print("Seed: " + str(Seed))
         i += 1
-        #print("Seed: "+str(Seed))
     return Seed
 
-#TODO: still needs to be tested with the real edgelist (sum)
+#DONE: still needs to be tested with the real edgelist (sum)
 G= nx.read_weighted_edgelist("testing/sl06.edgelist", create_using=nx.DiGraph())
 
 G = nx.read_weighted_edgelist('normalized.edgelist', create_using=nx.DiGraph())
 
 list_nodes = list(G.nodes())
 
-print(list_nodes[0])
+
 bestSeed = greedy(10, G)
 
 print(set(bestSeed))

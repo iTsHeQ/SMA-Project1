@@ -75,12 +75,12 @@ def greedy(budget, G, pregen=True):
 #DONE: still needs to be tested with the real edgelist (sum)
 # G= nx.read_weighted_edgelist("testing/sl06.edgelist", create_using=nx.DiGraph())
 
+
 def main():
     dataset_loc = 'Dataset'
     sum_edge = os.path.join(dataset_loc, 'Preproc', 'sum.edgelist')
     norm_edge = os.path.join(dataset_loc, 'Preproc', 'normalized.edgelist')
     G = nx.read_weighted_edgelist(norm_edge, create_using=nx.DiGraph())
-
     bestSeed = greedy(5, G)
 
     print(set(bestSeed))

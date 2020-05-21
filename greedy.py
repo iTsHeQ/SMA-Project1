@@ -4,7 +4,7 @@ import random
 from tqdm import tqdm
 
 def neighbors_activation(G):
-    neighbor_of = {}
+    neighbors_of = {}
     for n in G.nodes():
         activated = []
         for neighbor in G.neighbors(n):
@@ -12,17 +12,21 @@ def neighbors_activation(G):
             randomValue = random.uniform(0, 1)
             if (randomValue < weight): 
                 activated.append(neighbor)
-        neighbor_of[n]= activated
-    return neighbor_of
+        neighbors_of[n]= activated
+    return neighbors_of
 
 def icm(G, nodes, act):
     actives = nodes # a node in nodes can't be reactivated
-    activated = set()
-    for n in nodes:
-        for neighbor in G.neighbors(n):
-            if neighbor in act[n]:
-                activated.add(neighbor)
-    return len(set(activated))
+    passives = set()
+    while bool(actives):
+        for n in nodes:
+            activated = set()
+            for neighbor in set(G.neighbors(n)) - passives:
+                if neighbor in act[n]:
+                    activated.add(neighbor)
+            passives += actives
+            actives = activated
+    return len(set(passives))
 
 #this will not work, we have to keep it in the main function (greed())
 # def bestNode(G, list_node):

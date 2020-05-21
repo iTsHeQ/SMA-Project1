@@ -74,7 +74,7 @@ def greedy(budget, G,pregen=True):
 #DONE: still needs to be tested with the real edgelist (sum)
 G= nx.read_weighted_edgelist("testing/sl06.edgelist", create_using=nx.DiGraph())
 
-G = nx.read_weighted_edgelist('normalized.edgelist', create_using=nx.DiGraph())
+G = nx.read_weighted_edgelist('normalized.edgelist', nodetype=int, create_using=nx.DiGraph())
 
 list_nodes = list(G.nodes())
 

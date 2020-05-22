@@ -14,6 +14,7 @@ RetweetGraph = nx.read_weighted_edgelist(retweet, nodetype=int, create_using=nx.
 ReplyGraph = nx.read_weighted_edgelist(reply, nodetype=int, create_using=nx.DiGraph())
 MentionGraph = nx.read_weighted_edgelist(mention, nodetype=int, create_using=nx.DiGraph())
 
+# use the networkx library to calculate the pearson coefficient
 mention=nx.degree_pearson_correlation_coefficient(MentionGraph, x='out', weight="weight")
 #reply=nx.degree_pearson_correlation_coefficient(ReplyGraph, x='out', weight="weight")
 #retweet=nx.degree_pearson_correlation_coefficient(RetweetGraph, x='out', weight="weight")

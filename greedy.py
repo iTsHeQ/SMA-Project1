@@ -35,7 +35,8 @@ def pregen_icm(G, nodes, act, _icm):
     no_act = {node: len(_icm[node]) for node in nodes}
     max_act = max(no_act.values())
     return(max_act)
-            
+
+#  neighbors_activation(G) will take a Graph as parameter, and will check which node could activate his neighbor, and returns a list of possible activation
 def icm(G, nodes, act):
     actives = nodes # a node in nodes can't be reactivated
     passives = set()
@@ -49,12 +50,14 @@ def icm(G, nodes, act):
             actives = activated
     return len(set(passives))
 
+# This function takes three arguments, and calculated the best possible starting nodes
+
 def greedy(budget, G, pregen=True):
     i = 0
     Seed = []
     random.seed(4)  # Seed chosen by fair dice roll, guaranteed to be random. https://xkcd.com/212 
     nodeList = list(G.nodes())
-    act = neighbors_activation(G)
+    act = neighbors_activation(G) # the possible activation of nodes
     _icm = icm_all(G, act)
     while i != budget:
         best_node = nodeList[0]
@@ -66,7 +69,7 @@ def greedy(budget, G, pregen=True):
             else: #left over for comparison
                 numberOfActivation = icm(G, fSuV, act)
             numberOfActivations[node] = numberOfActivation
-        bestNode = max(numberOfActivations, key=numberOfActivations.get)
+        bestNode = max(numberOfActivations, key=numberOfActivations.get) # get the best node and removes it from the nodeList, to avoid calculation with it again
         nodeList.remove(best_node)
         Seed.append(best_node)
         i += 1

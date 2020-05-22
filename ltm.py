@@ -2,7 +2,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import random
 
-
+# This algorithm is based on the lecture slide
+# This takes 2 arguments: activeNode is the list of predefined calculated nodes, thresholdlist is a list of predefined thresholds for each node
+# It will return a list of activated nodes
 def sumLTM(activNodes, threshHoldList):
     for n in activNodes:
         for neighbor in G.neighbors(n):
@@ -18,6 +20,7 @@ def sumLTM(activNodes, threshHoldList):
                     activated.append(neighbor)
     return activated
 
+# generateThreshold creates a random threshold from a specific range, which will be used to compare in the LTM
 def generateThreshold(Graph):
     thresh = {}
     for n in Graph:
@@ -30,6 +33,7 @@ G= nx.read_weighted_edgelist("normalized.edgelist", nodetype=int, create_using=n
 
 threshHoldList = generateThreshold(G)
 
+# best initial nodes based on the greedy algorithm
 activated = [8614, 161345, 177615, 24443, 260830, 282071, 110177, 162766, 255804, 450789, 313420]
 
 

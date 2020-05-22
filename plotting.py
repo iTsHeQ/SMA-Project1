@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import random
 import os
 
+
 def neighbors_activation(G):
     neighbors_of = {}
     for n in G.nodes():
@@ -15,7 +16,7 @@ def neighbors_activation(G):
         neighbors_of[n]= activated
     return neighbors_of
 
-
+# this is basically the same as in the greedy.py, in addition we add here the number of activation at each step
 def icm(G, nodes, act):
     actives = nodes # a node in nodes can't be reactivated
     passives = set()

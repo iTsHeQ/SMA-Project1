@@ -1,0 +1,72 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{unifrsr}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{pdfpages}
+\usepackage[page,toc,titletoc,title]{appendix}
+\usepackage{tocloft}
+\usepackage{todonotes}
+\usepackage[english]{babel}
+\usepackage{csquotes}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+\usepackage{enumerate}
+\PassOptionsToPackage{%
+backend=biber, % Instead of bibtex
+% backend=bibtex8,
+bibencoding=ascii,%
+language=auto,%
+style=numeric-comp,%
+%style=authoryear-comp, % Author 1999, 2010
+%bibstyle=authoryear,dashed=false, % dashed: substitute rep. author with ---
+sorting=nyt, % name, year, title
+maxbibnames=10, % default: 3, et al.
+%backref=true,%
+natbib=true % natbib compatibility mode (\citep and \citet still work)
+}{biblatex}
+\usepackage{biblatex}
+\bibliography{references}
+\usepackage{array,multirow,graphicx}
+
+\begin{document}
+\seminartitle{Social Media Analytics} % The title of the seminar
+
+\title{Information Diffusion and Influence in Twitter } % The title of your project
+
+\author{Hekuran Mulaki (16-217-382)\thanks{\email{hekuran.mulaki@unifr.ch}, University of Fribourg}
+    \and Lionel Ieri \thanks{\email{}, University of Fribourg}
+   }	% Note: XX-XXX-XXX is the student's matriculation number
+   % The author(s), separated by \and
+
+\supervisor{Prof. Phillip, Mourad Kahaty} % Name of the supervisor
+
+\assistant{Akansha \and Rana Hussein} %Name of the assistant(s)
+
+\date{\today} % Note: if this is left out, today's date will be used, this is the submission date!
+
+\maketitle
+
+%should consist of about 150 words, describing the main results of our work
+
+
+
+%\tableofcontents
+
+
+
+\newpage
+
+
+
+\include{report}
+
+
+
+
+
+
+
+\end{document}

@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import random
 import os
 
+from greedy import greedy
+
 
 def neighbors_activation(G):
     neighbors_of = {}

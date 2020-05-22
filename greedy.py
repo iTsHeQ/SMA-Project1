@@ -10,13 +10,13 @@ def neighbors_activation(G):
         activated = []
         for neighbor in G.neighbors(n):
             weight = G.get_edge_data(n, neighbor).get("weight")
-            randomValue = random.uniform(0, 1)
+            randomValue = random.uniform(0, 0.001)
             if (randomValue < weight): 
                 activated.append(neighbor)
         neighbors_of[n]= activated
     return neighbors_of
 
-def icm_all(G, act):
+def icm_all(G, neighbours_activation):
     icm = {}
     for node in tqdm(G.nodes(),'modeling of the cascades for each nodes'):
         actives, passives = [node],[]
@@ -24,35 +24,27 @@ def icm_all(G, act):
             for n in actives:
                 activated = []
                 for neighbor in (set(G.neighbors(n)) - set(passives)):
-                    if neighbor in act[n]:
+                    if neighbor in neighbours_activation[n]:
                         activated.append(neighbor)
                 passives +=actives
                 actives = activated
         icm[node] = passives
     return(icm)
 
-def pregen_icm(G, nodes, act, _icm):
+
+def pregen_icm(G, nodes, _icm, final=False):
     no_act = {node: len(_icm[node]) for node in nodes}
     max_act = max(no_act.values())
-    return(max_act)
+    if final:
+        return(no_act)
+    else:
+        return max_act
 
 #  neighbors_activation(G) will take a Graph as parameter, and will check which node could activate his neighbor, and returns a list of possible activation
-def icm(G, nodes, act):
-    actives = nodes # a node in nodes can't be reactivated
-    passives = set()
-    while bool(actives):
-        for n in actives:
-            activated = set()
-            for neighbor in set(G.neighbors(n)) - passives:
-                if neighbor in act[n]:
-                    activated.add(neighbor)
-            passives.update(set(actives))
-            actives = activated
-    return len(set(passives))
 
 # This function takes three arguments, and calculated the best possible starting nodes
 
-def greedy(budget, G, pregen=True):
+def greedy(budget, G):
     i = 0
     Seed = []
     random.seed(4)  # Seed chosen by fair dice roll, guaranteed to be random. https://xkcd.com/212 
@@ -64,19 +56,19 @@ def greedy(budget, G, pregen=True):
         numberOfActivations = {}
         for node in tqdm(nodeList, 'searching for the %d/%d most activating user'% (i+1,budget)):
             fSuV = Seed + [node]
-            if pregen:
-                numberOfActivation = pregen_icm(G, fSuV, act, _icm)
-            else: #left over for comparison
-                numberOfActivation = icm(G, fSuV, act)
+            numberOfActivation = pregen_icm(G, fSuV, _icm)
             numberOfActivations[node] = numberOfActivation
         bestNode = max(numberOfActivations, key=numberOfActivations.get) # get the best node and removes it from the nodeList, to avoid calculation with it again
         nodeList.remove(best_node)
         Seed.append(best_node)
         i += 1
-    return Seed
+    seed_activation = pregen_icm(G,Seed,_icm,True)
+    return seed_activation
 
 #DONE: still needs to be tested with the real edgelist (sum)
 # G= nx.read_weighted_edgelist("testing/sl06.edgelist", create_using=nx.DiGraph())
+
+#fonction de plotting
 
 
 def main():
@@ -86,7 +78,7 @@ def main():
     G = nx.read_weighted_edgelist(norm_edge, nodetype=int, create_using=nx.DiGraph())
     bestSeed = greedy(5, G)
 
-    print(set(bestSeed))
+    print(bestSeed)
 
 if __name__ == '__main__':
     main()

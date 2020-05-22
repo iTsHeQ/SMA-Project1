@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import random
 from tqdm import tqdm
 import os
+import pickle
 
 def neighbors_activation(G):
     neighbors_of = {}
@@ -10,7 +11,7 @@ def neighbors_activation(G):
         activated = []
         for neighbor in G.neighbors(n):
             weight = G.get_edge_data(n, neighbor).get("weight")
-            randomValue = random.uniform(0, 0.001)
+            randomValue = 0
             if (randomValue < weight): 
                 activated.append(neighbor)
         neighbors_of[n]= activated
@@ -26,14 +27,14 @@ def icm_all(G, neighbours_activation):
                 for neighbor in (set(G.neighbors(n)) - set(passives)):
                     if neighbor in neighbours_activation[n]:
                         activated.append(neighbor)
-                passives +=actives
-                actives = activated
+            passives +=actives
+            actives = activated
         icm[node] = passives
     return(icm)
 
 
-def pregen_icm(G, nodes, _icm, final=False):
-    no_act = {node: len(_icm[node]) for node in nodes}
+def pregen_icm(nodes, icm, final=False):
+    no_act = {node: len(icm[node]) for node in nodes}
     max_act = max(no_act.values())
     if final:
         return(no_act)
@@ -44,25 +45,22 @@ def pregen_icm(G, nodes, _icm, final=False):
 
 # This function takes three arguments, and calculated the best possible starting nodes
 
-def greedy(budget, G):
+def greedy(budget, G, act, cascades):
     i = 0
     Seed = []
     random.seed(4)  # Seed chosen by fair dice roll, guaranteed to be random. https://xkcd.com/212 
     nodeList = list(G.nodes())
-    act = neighbors_activation(G) # the possible activation of nodes
-    _icm = icm_all(G, act)
     while i != budget:
-        best_node = nodeList[0]
         numberOfActivations = {}
         for node in tqdm(nodeList, 'searching for the %d/%d most activating user'% (i+1,budget)):
-            fSuV = Seed + [node]
-            numberOfActivation = pregen_icm(G, fSuV, _icm)
+            SuV = Seed + [node]
+            numberOfActivation = pregen_icm(SuV, cascades)
             numberOfActivations[node] = numberOfActivation
         bestNode = max(numberOfActivations, key=numberOfActivations.get) # get the best node and removes it from the nodeList, to avoid calculation with it again
-        nodeList.remove(best_node)
-        Seed.append(best_node)
+        nodeList.remove(bestNode)
+        Seed.append(bestNode)
         i += 1
-    seed_activation = pregen_icm(G,Seed,_icm,True)
+    seed_activation = pregen_icm(G,Seed,cascades,True)
     return seed_activation
 
 #DONE: still needs to be tested with the real edgelist (sum)
@@ -76,7 +74,24 @@ def main():
     sum_edge = os.path.join(dataset_loc, 'Preproc', 'sum.edgelist')
     norm_edge = os.path.join(dataset_loc, 'Preproc', 'normalized.edgelist')
     G = nx.read_weighted_edgelist(norm_edge, nodetype=int, create_using=nx.DiGraph())
-    bestSeed = greedy(5, G)
+    activations_file = 'activations.pkl'
+    cascades_file = 'cascades.pkl'
+    if os.path.isfile(activations_file):
+        f = open(activations_file, 'rb')
+        act = pickle.load(f)
+        g = open(cascades_file, 'rb')
+        cas = pickle.load(g)
+    else:
+        act = neighbors_activation(G)
+        cas = icm_all(G, act)
+        f = open(activations_file, 'wb')
+        pickle.dump(act,f)
+        g = open(cascades_file, 'wb')
+        pickle.dump(cas, g)
+    f.close()
+    g.close()
+    
+    bestSeed = greedy(5, G, act, cas)
 
     print(bestSeed)
 

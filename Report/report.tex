@@ -17,11 +17,12 @@ language=Python,
  showstringspaces=false,
  breaklines=true,
  numbers=left
+ title=\lstname 
 }
 
 \section{Dataset}
 The datasets consists of 3 different edgefiles, which represents different interactions of twitterusers. Since these are are one way interactions, the datasets each represents a directed graph.\\
- In order to recreate the informationflow, the graphs must be reversed and and summed up to represent one value per edge of an interaction. In the next step those new weights had to be normalized.
+ In order to recreate the informationflow, the graphs must be reversed and and summed up to represent one value per edge of an interaction. In the next step those new weights had to be normalized, and which was used as a base for our implementation and calculation.
 \section{Implementation and Result Analysis}
 In this chapter we will discuss the implementation of the ICM and greedy algorithm.
 \subsection{Independent Cascade Model (ICM)}
@@ -40,13 +41,13 @@ One of the first hurdle was to make the algorithm deterministic instead of stoch
     \label{fig:greedy_pseudo}
 \end{figure}
 
-The first implementation was relatively inefficient. The cascades were calculated from scratch for each nodes each time we were trying to determine the highest spreading node (line 5 of the pseudocode in \ref{fig:greedy_pseudo}.)
+\noindent The first implementation was relatively inefficient. The cascades were calculated from scratch for each nodes each time we were trying to determine the highest spreading node (line 5 of the pseudocode in \ref{fig:greedy_pseudo}.)
 To solve that we moved to calculate the activation for each nodes preemptively with \texttt{neighbors\_activation(G)} which check the potential for each node to activate its neighbours.
 This accelerated the process, but was still slow. 
 
 To optimise more, cascades were eventually move to be pregenerated to with \texttt{icm\_all(G, act)}. This gives us a dictionary of cascade for each nodes. With this the algorithm speed improve drastically.
 
-\lstinputlisting[style=custompython, firstline=21, lastline = 43,firstnumber= 21]{../greedy.py}
+\lstinputlisting[style=custompython, firstline=62, lastline = 83,firstnumber= 62]{../greedy.py}
 
 \subsubsection*{Mistake and potential fix (Lionel)}
 
@@ -61,7 +62,7 @@ For that, the lists of nodes from the cascade should be put together without rep
     \caption{Activation over iteration with p= 0 to 1}
     \label{fig:icm01}
 \end{figure}
-Since there was the error in the \texttt{pregen\_icm} function mentioned above, the pre-generated cascade was also used for this purpose, and so the results are not correct. If the results would be correct, we would expect an exponential rise of node activation, which would after some time flatten until no more activation happen.
+Since there was the error in the \texttt{pregen\_icm} function mentioned above, the pregenerated cascade was also used for this purpose, and so the results are not correct. If the results would be correct, we would expect an exponential rise of node activation, which would after some time flatten until no more activation happen.
 \subsubsection{Lower the probability}
 A quick glance at our data set shows that most nodes have only 1 interaction. Which lead to their value being normalized at 0. On the other hand, a handful of nodes have a lot of reach and have interacted and been interacted a lot. 
 Which lead them to have a normalized value way way above the other values.
@@ -106,7 +107,7 @@ To calculate the values we used the networkx library \textit{degree\_pearson\_co
  \hline
 \end{tabular}
 \end{center}
-None of those nodes have a linear relation between them. The reason behind this could be the outliers in each of the dataset.
+None of those nodes have a linear relation between them. The reason behind this could be the outliers in each of the dataset. Which received a value of 0 and only one connection
 \subsection{Linear Threshold Model (LTM) over time}
 The LTM is such a model where the weights of the edges between the nodes represent how much the nodes can affect each other. To be able to activate a neighbor, the sum of all incoming edges must be higher than the threshold, which was predefined. \\
 For this part of the analyse we took 30 initial active nodes. Since the values of the nodes were really low, we did two different runs, once with pregenerating random value from 0 to 1, and once with values from 0 to 0.1. We came up with the following activation of nodes over iterations:
@@ -120,6 +121,7 @@ For this part of the analyse we took 30 initial active nodes. Since the values o
     \caption{Probabilities from 0 to 0.1}\label{fig:sumltm}
 \endminipage
 \end{figure}
+\newpage
 \subsubsection{Analysis of LTM-results}
 At first sight the graphs have similar behavior. What changes are the values on the y-axis. The iteration with the higher probability gives us less activation over 30 nodes, than then one with less higher probability. The reason behind this difference is that the normalized values are to low and by summing them up, they can't reach the threshold.\\
 

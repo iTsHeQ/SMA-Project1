@@ -4,6 +4,7 @@ import random
 from tqdm import tqdm
 import os
 import pickle
+from itertools import product
 
 #  neighbors_activation(G) will take a Graph as parameter, and will check which node could activate his neighbor, and returns a list of possible activation
 def neighbors_activation(G):
@@ -18,7 +19,7 @@ def neighbors_activation(G):
         neighbors_of[n]= activated
     return neighbors_of
 
-def icm_all(G, neighbours_activation):
+def cascades(G, neighbours_activation):
     icm = {}
     for node in tqdm(G.nodes(),'modeling of the cascades for each nodes'):
         actives, passives = [node],[]
@@ -34,15 +35,12 @@ def icm_all(G, neighbours_activation):
     return(icm)
 
 
-def pregen_icm(nodes, icm, final=False):
-    no_act = {node: len(icm[node]) for node in nodes}
-    max_act = max(no_act.values())
-    if final:
-        return(no_act)
-    else:
-        return max_act
-
-
+def pregen_icm(nodes, icm):
+    activated_per_node = {node: icm[node] for node in nodes}
+    _activated = max([len(activated_per_node.values())]) #This is wrong
+    # I am calculating the length of the longest cascade instead of doing the size of the activated network.
+    activated = sum([len(activated_per_node.values())])
+    return activated
 
 # This function takes three arguments, and calculated the best possible starting nodes
 
@@ -61,8 +59,8 @@ def greedy(budget, G, act, cascades):
         nodeList.remove(bestNode)
         Seed.append(bestNode)
         i += 1
-    seed_activation = pregen_icm(Seed,cascades,True)
-    return seed_activation
+    # seed_activation = pregen_icm(Seed,cascades,True)
+    return Seed
 
 def greedyPlotting(Graph, act, cas):
     greedyPlot = {}
@@ -117,7 +115,7 @@ def main():
         cas = pickle.load(g)
     else:
         act = neighbors_activation(G)
-        cas = icm_all(G, act)
+        cas = cascades(G, act)
         f = open(activations_file, 'wb')
         pickle.dump(act,f)
         g = open(cascades_file, 'wb')

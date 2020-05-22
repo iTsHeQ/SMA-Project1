@@ -60,7 +60,7 @@ def greedy(budget, G, act, cascades):
         nodeList.remove(bestNode)
         Seed.append(bestNode)
         i += 1
-    seed_activation = pregen_icm(G,Seed,cascades,True)
+    seed_activation = pregen_icm(Seed,cascades,True)
     return seed_activation
 
 #DONE: still needs to be tested with the real edgelist (sum)

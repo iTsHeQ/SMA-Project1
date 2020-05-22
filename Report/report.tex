@@ -1,3 +1,4 @@
+
 \section{Dataset}
 
 \section{Implementation and Result Analysis}
@@ -6,6 +7,10 @@
 
 \subsection{Maximizing the spread of cascades - Greedy algorithm}
 
+With a greedy algorithm our main focus was on optimising the cycle speed to facilitate the treatment of our dataset and not having to wait half an our to get only a few seeds.
+One of the first hurdle was to make the algorithm deterministic instead of stochastic for consistency. For that we're using the \href{https://docs.python.org/3.8/library/random.html#random.seed}{random.seed} from python random library, which will give us consistent generated values.
+
+The first implementation was relatively inefficient. The cascades were calculated from scratch for each nodes each time we were trying to determine the highest spreading node.
 \section{Evaluation}
 
 \subsection{ICM - Activation over time}

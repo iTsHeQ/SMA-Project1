@@ -7,11 +7,8 @@ This is the Social Media Analytics Project of Information Diffusion and Influenc
 Each step is on a different file:
 
 * dataset/... : contains the datasets
-* icm.py: This file contains the ICM algorithm implementation 
-* greedy.py: This file contains the greedy algorithm for the lectures, which gives us the best initial nodes to activate
-* ltm.py: This file contains the LTM algorithm implementation
+* greedy.py: This is the main file which contains the greedy algorithm for the lectures, which gives us the best initial nodes to activate, also includes all plotting functions
 * pearson.py: This file calculates the pearson corrolation of each dataset
-* plotting.py: This file contains all necessary implementation to plot the analysis part
 * dataSet.py: This one preprocesses the datasets (reverse graphs, sum up, normalize)
 
 

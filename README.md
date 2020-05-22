@@ -6,7 +6,8 @@ This is the Social Media Analytics Project of Information Diffusion and Influenc
 
 Each step is on a different file:
 
-* dataset/... : contains the datasets
+* dataset/.. : contains the datasets
+* testing/.. : contains all files which were used for developing and testing functions and code (not relevant for the project)
 * greedy.py: This is the main file which contains the greedy algorithm for the lectures, which gives us the best initial nodes to activate, also includes all plotting functions
 * pearson.py: This file calculates the pearson corrolation of each dataset
 * dataSet.py: This one preprocesses the datasets (reverse graphs, sum up, normalize)
@@ -25,7 +26,7 @@ pip install numpy==1.18.2
 ### Running
 
 
-Each file should be run separately.
+First of all you should choose the desired budget k in the file greedy.py, then run just the file. This will generate 3 plots with the best possible seed.
 
 
  

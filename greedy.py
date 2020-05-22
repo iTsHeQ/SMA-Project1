@@ -5,13 +5,14 @@ from tqdm import tqdm
 import os
 import pickle
 
+#  neighbors_activation(G) will take a Graph as parameter, and will check which node could activate his neighbor, and returns a list of possible activation
 def neighbors_activation(G):
     neighbors_of = {}
     for n in G.nodes():
         activated = []
         for neighbor in G.neighbors(n):
             weight = G.get_edge_data(n, neighbor).get("weight")
-            randomValue = 0
+            randomValue = random.uniform(0,1)
             if (randomValue < weight): 
                 activated.append(neighbor)
         neighbors_of[n]= activated
@@ -41,7 +42,7 @@ def pregen_icm(nodes, icm, final=False):
     else:
         return max_act
 
-#  neighbors_activation(G) will take a Graph as parameter, and will check which node could activate his neighbor, and returns a list of possible activation
+
 
 # This function takes three arguments, and calculated the best possible starting nodes
 
@@ -63,8 +64,41 @@ def greedy(budget, G, act, cascades):
     seed_activation = pregen_icm(Seed,cascades,True)
     return seed_activation
 
-#DONE: still needs to be tested with the real edgelist (sum)
-# G= nx.read_weighted_edgelist("testing/sl06.edgelist", create_using=nx.DiGraph())
+def greedyPlotting(Graph, act, cas):
+    greedyPlot = {}
+    listNumberActivated = []
+    random.seed(4)
+    lengthICM = 0
+    for i in range(9, 30, 10):
+        seed = greedy(i, Graph, act, cas)
+        lengthICM = 0
+        for numberOfActivation in seed.values():
+            lengthICM += numberOfActivation
+        greedyPlot[i] = lengthICM
+    
+    x,y = zip(*sorted(greedyPlot.items()))
+    plt.plot(x,y)
+    plt.show()
+    
+def icmPlotting(seed, cas):
+    nActiv = pregen_icm(seed, cas)
+    icmPlot = {}
+    total = 0
+    for i in range(0, nActiv, 1):
+        for node in seed:
+            try:
+                cas[node][i]
+            except:
+                continue
+            else:
+                total += 1
+            icmPlot[i] = total
+    
+    x,y = zip(*sorted(icmPlot.items()))
+    plt.plot(x,y)
+    plt.show()
+
+
 
 #fonction de plotting
 
@@ -92,8 +126,9 @@ def main():
     g.close()
     
     bestSeed = greedy(5, G, act, cas)
-
-    print(bestSeed)
+    icmPlotting(bestSeed, cas)
+    greedyPlotting(G, act, cas)
+    #print(list(bestSeed.values()))
 
 if __name__ == '__main__':
     main()

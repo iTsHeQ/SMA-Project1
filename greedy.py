@@ -5,6 +5,47 @@ from tqdm import tqdm
 import os
 import pickle
 
+
+#choose desired k, and put it in the first argument
+budget = 20
+
+
+
+
+
+
+def generateThreshold(Graph):
+    thresh = {}
+    for n in Graph:
+        threshHold = random.uniform(0,1)
+        thresh[n] = threshHold
+    return thresh
+
+# This algorithm is based on the lecture slide
+# This takes 2 arguments: activeNode is the list of predefined calculated nodes, thresholdlist is a list of predefined thresholds for each node
+# It will return a list of activated nodes
+def sumLTM(G, activNodes, threshHoldList):
+    activated = []
+    numberOfActives = []
+    number = 0
+    for n in activNodes:
+        for neighbor in G.neighbors(n):
+            incoming = G.in_edges(neighbor)
+            sum = 0
+            for i in incoming:
+                source, destination = i
+                if source in activNodes:
+                    weight = G.get_edge_data(source, destination).get("weight")
+                    sum += weight
+            if (sum > threshHoldList[neighbor]):
+                if neighbor not in activated:
+                    activated.append(neighbor)
+        numberOfActives.append(len(activated))   
+    plt.figure(3)
+    plt.title('LTM sum')
+    plt.plot(numberOfActives)
+
+    #plt.show()
 #  neighbors_activation(G) will take a Graph as parameter, and will check which node could activate his neighbor, and returns a list of possible activation
 def neighbors_activation(G):
     neighbors_of = {}
@@ -69,7 +110,7 @@ def greedyPlotting(Graph, act, cas):
     listNumberActivated = []
     random.seed(4)
     lengthICM = 0
-    for i in range(9, 30, 10):
+    for i in range(9, 50, 5):
         seed = greedy(i, Graph, act, cas)
         lengthICM = 0
         for numberOfActivation in seed.values():
@@ -78,8 +119,9 @@ def greedyPlotting(Graph, act, cas):
     
     x,y = zip(*sorted(greedyPlot.items()))
     plt.plot(x,y)
-    plt.show()
-    
+    plt.title('Greedy Algorithm')
+    plt.figure(1)
+  
 def icmPlotting(seed, cas):
     nActiv = pregen_icm(seed, cas)
     icmPlot = {}
@@ -95,12 +137,10 @@ def icmPlotting(seed, cas):
             icmPlot[i] = total
     
     x,y = zip(*sorted(icmPlot.items()))
+    plt.figure(2)
+    plt.title('ICM Algorithm')
     plt.plot(x,y)
-    plt.show()
 
-
-
-#fonction de plotting
 
 
 def main():
@@ -124,11 +164,14 @@ def main():
         pickle.dump(cas, g)
     f.close()
     g.close()
-    
-    bestSeed = greedy(5, G, act, cas)
+
+
+    bestSeed = greedy(budget, G, act, cas)
     icmPlotting(bestSeed, cas)
     greedyPlotting(G, act, cas)
-    #print(list(bestSeed.values()))
+    threshList = generateThreshold(G)
+    sumLTM(G, bestSeed,threshList )
+    plt.show()
 
 if __name__ == '__main__':
     main()

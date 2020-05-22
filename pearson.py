@@ -9,17 +9,21 @@ import os
 retweet = os.path.join('Dataset', 'higgs-retweet_network.edgelist')
 reply = os.path.join('Dataset', 'higgs-reply_network.edgelist')
 mention = os.path.join('Dataset', 'higgs-mention_network.edgelist')
+normalized = os.path.join('Dataset', 'normalized.edgelist')
 
 RetweetGraph = nx.read_weighted_edgelist(retweet, nodetype=int, create_using=nx.DiGraph())
 ReplyGraph = nx.read_weighted_edgelist(reply, nodetype=int, create_using=nx.DiGraph())
 MentionGraph = nx.read_weighted_edgelist(mention, nodetype=int, create_using=nx.DiGraph())
+NormalizedGraph = nx.read_weighted_edgelist(mention, nodetype=int, create_using=nx.DiGraph())
 
 # use the networkx library to calculate the pearson coefficient
 mention=nx.degree_pearson_correlation_coefficient(MentionGraph, x='out', weight="weight")
-#reply=nx.degree_pearson_correlation_coefficient(ReplyGraph, x='out', weight="weight")
-#retweet=nx.degree_pearson_correlation_coefficient(RetweetGraph, x='out', weight="weight")
+reply=nx.degree_pearson_correlation_coefficient(ReplyGraph, x='out', weight="weight")
+retweet=nx.degree_pearson_correlation_coefficient(RetweetGraph, x='out', weight="weight")
+normalized=nx.degree_pearson_correlation_coefficient(NormalizedGraph, x='out', weight="weight")
 
 print("Pearson Correlation Mention: " + str(mention))
-#print("Pearson Correlation Reply: " + str(reply))
-#print("Pearson Correlation Retweet: " + str(retweet))
+print("Pearson Correlation Reply: " + str(reply))
+print("Pearson Correlation Retweet: " + str(retweet))
+print("Pearson Correlation Normalized: " + str(normalized))
 

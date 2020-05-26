@@ -206,12 +206,13 @@ def data_treatment_test():
 
 def main():
     G, cascades = data_treatment()
-    print('Calculating the best 30 seeds with greedy algorithm')
-    bestSeed = greedy(30, G, cascades)
+    print('Calculating the best 100 seeds with greedy algorithm')
+    bestSeed = greedy(100, G, cascades)
     print('Best seeds found')
     icmPlotting(bestSeed, cascades)
+    plt.show()
     greedyPlotting(G, cascades, 10)
-    #print(list(bestSeed.values()))
+    # print(list(bestSeed.values()))
     plt.show()
 
 if __name__ == '__main__':

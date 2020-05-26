@@ -75,14 +75,13 @@ def greedyPlotting(Graph, cascades, iterations):
     listNumberActivated = []
     random.seed(4)
     lengthICM = 0
-    for i in range(9, iterations*10, 10):
+    for i in tqdm(range(9, iterations*10, 10), 'Activations over iteration for the greedy algorithm'):
         seed = greedy(i, Graph, cascades)
         lengthICM = pregen_icm(seed, cascades)
         # lengthICM = 0
         # for numberOfActivation in seed.values():
         #     lengthICM += numberOfActivation
         greedyPlot[i] = lengthICM
-        print(lengthICM)
     
     x,y = zip(*sorted(greedyPlot.items()))
     plt.plot(x,y)
@@ -95,7 +94,7 @@ def icmPlotting(seed, cascades):
     nActiv = pregen_icm(seed, cascades)
     icmPlot = {}
     total = 0
-    for i in range(0, nActiv, 1):
+    for i in tqdm(range(0, nActiv, 1), 'Activations over iteration for the ICM algorithm'):
         for node in seed:
             try:
                 cascades[1][node][i]
@@ -165,9 +164,11 @@ def data_treatment_test():
 
 def main():
     G, cascades = data_treatment()
+    print('Calculating the best 30 seeds with greedy algorithm')
     bestSeed = greedy(30, G, cascades)
+    print('Best seeds found')
     icmPlotting(bestSeed, cascades)
-    greedyPlotting(G, 10, cascades)
+    greedyPlotting(G, cascades, 10)
     #print(list(bestSeed.values()))
     plt.show()
 

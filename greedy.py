@@ -86,7 +86,10 @@ def greedyPlotting(Graph, cascades, iterations):
     
     x,y = zip(*sorted(greedyPlot.items()))
     plt.plot(x,y)
-    plt.show()
+    plt.title("Greedy Algorithm - Activations over iteration")
+    plt.xlabel("Number of iterations")
+    plt.ylabel("Number of activated nodes")
+    plt.figure(1)
     
 def icmPlotting(seed, cascades):
     nActiv = pregen_icm(seed, cascades)
@@ -104,7 +107,11 @@ def icmPlotting(seed, cascades):
     
     x,y = zip(*sorted(icmPlot.items()))
     plt.plot(x,y)
-    plt.show()
+    plt.title("ICM Algorithm - Activations over iteration")
+    plt.xlabel("Number of iterations")
+    plt.ylabel("Number of activated nodes")
+    plt.figure(2)
+    
 
 def data_treatment():
     dataset_loc = 'Dataset'
@@ -162,6 +169,7 @@ def main():
     icmPlotting(bestSeed, cascades)
     greedyPlotting(G, 10, cascades)
     #print(list(bestSeed.values()))
+    plt.show()
 
 if __name__ == '__main__':
     main()

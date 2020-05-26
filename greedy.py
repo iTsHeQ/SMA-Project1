@@ -7,19 +7,19 @@ import pickle
 from itertools import product
 
 #  neighbors_activation(G) will take a Graph as parameter, and will check which node could activate his neighbor, and returns a list of possible activation
-def neighbors_activation(G):
+def neighbors_activation(G,upper):
     neighbors_of = {}
     for n in G.nodes():
         activated = []
         for neighbor in G.neighbors(n):
             weight = G.get_edge_data(n, neighbor).get("weight")
-            randomValue = random.uniform(0,1)
+            randomValue = random.uniform(0, upper)
             if (randomValue < weight): 
                 activated.append(neighbor)
         neighbors_of[n]= activated
     return neighbors_of
 
-def cascades(G, neighbours_activation):
+def cascades_gen(G, neighbours_activation):
     icm = {}
     for node in tqdm(G.nodes(),'modeling of the cascades for each nodes'):
         actives, passives = [node],[]
@@ -31,16 +31,18 @@ def cascades(G, neighbours_activation):
                         activated.append(neighbor)
             passives +=actives
             actives = activated
-        icm[node] = passives
-    return(icm)
+        icm[node] = set(passives)
+    sorted_icm = {k: v for k, v in sorted(
+        icm.items(), key=lambda item: len(item[1]), reverse=True)}
+    return(sorted_icm)
 
 
-def pregen_icm(nodes, icm):
-    activated_per_node = {node: icm[node] for node in nodes}
-    _activated = max([len(activated_per_node.values())]) #This is wrong
-    # I am calculating the length of the longest cascade instead of doing the size of the activated network.
-    activated = sum([len(activated_per_node.values())])
-    return activated
+def pregen_icm(nodes, cascades):
+    activated_per_node = {node: cascades[node] for node in nodes}
+    values = activated_per_node.values()
+    activated = set.union(*values)
+    size = len(activated)
+    return size
 
 # This function takes three arguments, and calculated the best possible starting nodes
 
@@ -96,36 +98,67 @@ def icmPlotting(seed, cas):
     plt.plot(x,y)
     plt.show()
 
+def data_treatment():
+    dataset_loc = 'Dataset'
+    preproc = os.path.join(dataset_loc, 'Preproc')
+    sum_edge = os.path.join(preproc, 'sum.edgelist')
+    norm_edge = os.path.join(preproc, 'normalized.edgelist')
+    G = nx.read_weighted_edgelist(
+        norm_edge, nodetype=int, create_using=nx.DiGraph())
+    upper = 1
+    activations_name = 'activations_0-%i.pkl' % upper
+    cascades_name = 'cascades0-%i.pkl' % upper
+    activations_file = os.path.join(preproc, activations_name)
+    cascades_file = os.path.join(preproc, cascades_name)
+    if os.path.isfile(activations_file):
+        f = open(activations_file, 'rb')
+        activations = pickle.load(f)
+        g = open(cascades_file, 'rb')
+        cascades = pickle.load(g)
+    else:
+        activations = neighbors_activation(G, upper)
+        cascades = cascades_gen(G, activations)
+        f = open(activations_file, 'wb')
+        pickle.dump(activations, f)
+        g = open(cascades_file, 'wb')
+        pickle.dump(cascades, g)
+    f.close()
+    g.close()
+    return(G, cascades, activations)
 
-
-#fonction de plotting
+def data_treatment_test():
+    dataset_loc = 'testing'
+    preproc = os.path.join(dataset_loc, 'Preproc')
+    norm_edge = os.path.join(dataset_loc, 'sl06.edgelist')
+    G = nx.read_weighted_edgelist(
+        norm_edge, nodetype=int, create_using=nx.DiGraph())
+    upper = 1
+    activations_name = 'activations_0-%i.pkl' % upper
+    cascades_name = 'cascades0-%i.pkl' % upper
+    activations_file = os.path.join(preproc, activations_name)
+    cascades_file = os.path.join(preproc, cascades_name)
+    if os.path.isfile(activations_file):
+        f = open(activations_file, 'rb')
+        activations = pickle.load(f)
+        g = open(cascades_file, 'rb')
+        cascade = pickle.load(g)
+    else:
+        activations = neighbors_activation(G, upper)
+        cascade = cascades_gen(G, activations)
+        f = open(activations_file, 'wb')
+        pickle.dump(activations, f)
+        g = open(cascades_file, 'wb')
+        pickle.dump(cascade, g)
+    f.close()
+    g.close()
+    return(G, cascade, activations)
 
 
 def main():
-    dataset_loc = 'Dataset'
-    sum_edge = os.path.join(dataset_loc, 'Preproc', 'sum.edgelist')
-    norm_edge = os.path.join(dataset_loc, 'Preproc', 'normalized.edgelist')
-    G = nx.read_weighted_edgelist(norm_edge, nodetype=int, create_using=nx.DiGraph())
-    activations_file = 'activations.pkl'
-    cascades_file = 'cascades.pkl'
-    if os.path.isfile(activations_file):
-        f = open(activations_file, 'rb')
-        act = pickle.load(f)
-        g = open(cascades_file, 'rb')
-        cas = pickle.load(g)
-    else:
-        act = neighbors_activation(G)
-        cas = cascades(G, act)
-        f = open(activations_file, 'wb')
-        pickle.dump(act,f)
-        g = open(cascades_file, 'wb')
-        pickle.dump(cas, g)
-    f.close()
-    g.close()
-    
-    bestSeed = greedy(5, G, act, cas)
-    icmPlotting(bestSeed, cas)
-    greedyPlotting(G, act, cas)
+    G, cascades, activations = data_treatment()
+    bestSeed = greedy(5, G, activations, cascades)
+    icmPlotting(bestSeed, cascades)
+    greedyPlotting(G, activations, cascades)
     #print(list(bestSeed.values()))
 
 if __name__ == '__main__':

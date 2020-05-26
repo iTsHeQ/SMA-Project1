@@ -70,12 +70,12 @@ def greedy(budget, G, cascades):
     # seed_activation = pregen_icm(Seed,cascades,True)
     return Seed
 
-def greedyPlotting(Graph, cascades):
+def greedyPlotting(Graph, cascades, iterations):
     greedyPlot = {}
     listNumberActivated = []
     random.seed(4)
     lengthICM = 0
-    for i in range(9, 100, 10):
+    for i in range(9, iterations*10, 10):
         seed = greedy(i, Graph, cascades)
         lengthICM = pregen_icm(seed, cascades)
         # lengthICM = 0
@@ -160,7 +160,7 @@ def main():
     G, cascades = data_treatment()
     bestSeed = greedy(30, G, cascades)
     icmPlotting(bestSeed, cascades)
-    greedyPlotting(G, cascades)
+    greedyPlotting(G, 10, cascades)
     #print(list(bestSeed.values()))
 
 if __name__ == '__main__':
